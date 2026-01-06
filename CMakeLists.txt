@@ -1,25 +1,21 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(ts)
+project(libts)
 
-# -- libts --
-set(lib_src_files
+set(CMAKE_C_STANDARD 90)    # Use ANSI C
+
+add_library(ts STATIC
     "src/ts_interpolation.c")
-add_library(ts STATIC ${lib_src_files})
 target_include_directories(ts PUBLIC include)
 
-# -- libtssyslibc --
-set(lib_sys_src_files
+add_library(tssyslibc STATIC
     "src/ts_sys_libc.c")
-add_library(libtssyslibc STATIC ${lib_sys_src_files})
-target_include_directories(libtssyslibc PUBLIC include)
+target_include_directories(tssyslibc PUBLIC include)
 
 # -- tests --
-set(tests_src_files
-    "test/main.c"
-    "test/test_interpolation.c")
-add_executable(tstests ${tests_src_files})
-target_include_directories(tstests PRIVATE include)
-target_link_libraries(tstests ts)
 enable_testing()
-add_test(tstests tstests)
+
+add_executable(test_interpolation test/test_interpolation.c)
+target_include_directories(test_interpolation PRIVATE include)
+target_link_libraries(test_interpolation ts)
+add_test(test_interpolation test_interpolation)
