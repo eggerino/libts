@@ -11,6 +11,7 @@ target_include_directories(ts PUBLIC include)
 add_library(tssyslibc STATIC
     "src/ts_sys_libc.c")
 target_include_directories(tssyslibc PUBLIC include)
+target_link_libraries(tssyslibc m)
 
 # -- tests --
 enable_testing()
@@ -18,4 +19,5 @@ enable_testing()
 add_executable(test_interpolation test/test_interpolation.c)
 target_include_directories(test_interpolation PRIVATE include)
 target_link_libraries(test_interpolation ts)
+target_link_libraries(test_interpolation tssyslibc)
 add_test(test_interpolation test_interpolation)

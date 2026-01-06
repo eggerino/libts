@@ -1,9 +1,15 @@
 #include <assert.h>
+#include <stdio.h>
 
 #include "ts.h"
 
 #define EPS 1e-15
 #define assert_eps(exp, act) assert((exp) - EPS < (act) && (exp) + EPS > (act))
+#define assert_vec3(exp, act) \
+    assert_eps(exp.x, act.x); \
+    assert_eps(exp.y, act.y); \
+    assert_eps(exp.z, act.z)
+#define assert_quat(exp, act) assert_vec3((exp), (act)), assert_eps(exp.w, act.w)
 
 void test_interpolate_linear1(void) {
     assert_eps(0, ts_interpolate_linear1(0, 1, 0));
@@ -14,18 +20,28 @@ void test_interpolate_linear1(void) {
 }
 
 void test_interpolate_linear3(void) {
-    ts_vec3 a = {1, 2, 3};
-    ts_vec3 b = {4, 2, 1};
-    ts_vec3 result = {0};
+    ts_vec3 expected = {1.75, 2, 2.5};
+    ts_vec3 actual = {0};
+    ts_f64 x = 0.25;
 
-    ts_interpolate_linear3(&a, &b, 0.25, &result);
+    ts_interpolate_linear3(&((ts_vec3){1, 2, 3}), &((ts_vec3){4, 2, 1}), x, &actual);
 
-    assert_eps(1.75, result.x);
-    assert_eps(2, result.y);
-    assert_eps(2.5, result.z);
+    assert_vec3(expected, actual);
+}
+
+void test_interpolate_slerp(void) {
+    ts_quat expected = {0.8660254037844386, 0.28867513459481287, 0.28867513459481287, 0.28867513459481287};
+    ts_quat actual = {0};
+    ts_f64 x = 0.5;
+
+    ts_interpolate_slerp(&((ts_quat){1, 0, 0, 0}), &((ts_quat){.5, .5, .5, .5}), x, &actual);
+
+    assert_quat(expected, actual);
 }
 
 int main(void) {
     test_interpolate_linear1();
     test_interpolate_linear3();
+    test_interpolate_slerp();
+    return 0;
 }
