@@ -5,6 +5,7 @@ project(libts)
 set(CMAKE_C_STANDARD 90)    # Use ANSI C
 
 add_library(ts STATIC
+    "src/ts_common_operations.c"
     "src/ts_interpolation.c")
 target_include_directories(ts PUBLIC include)
 
