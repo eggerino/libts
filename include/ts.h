@@ -34,19 +34,19 @@ typedef struct {
 } ts_pose_state;
 
 // Common operations
-ts_none ts_vec3_add(const ts_vec3* a, const ts_vec3* b, ts_vec3* result);
-ts_none ts_vec3_sub(const ts_vec3* a, const ts_vec3* b, ts_vec3* result);
+ts_vec3* ts_vec3_add(const ts_vec3* a, const ts_vec3* b, ts_vec3* result);
+ts_vec3* ts_vec3_sub(const ts_vec3* a, const ts_vec3* b, ts_vec3* result);
 ts_f64 ts_quat_dot(const ts_quat* a, const ts_quat* b);
 
 // Interpolation functions
 ts_f64 ts_interpolate_linear1(ts_f64 start, ts_f64 end, ts_f64 x);
 ts_f64 ts_interpolate_linear1_d(ts_f64 start, ts_f64 end);
 ts_f64 ts_interpolate_linear1_dd();
-ts_none ts_interpolate_linear3(const ts_vec3* start, const ts_vec3* end, ts_f64 x, ts_vec3* result);
-ts_none ts_interpolate_linear3_d(const ts_vec3* start, const ts_vec3* end, ts_vec3* result);
-ts_none ts_interpolate_linear3_dd(ts_vec3* result);
-ts_none ts_interpolate_slerp(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_quat* result);
-ts_none ts_interpolate_slerp_d(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_f64 dx, ts_quat* result);
-ts_none ts_interpolate_slerp_dd(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_f64 dx, ts_f64 ddx, ts_quat* result);
+ts_vec3* ts_interpolate_linear3(const ts_vec3* start, const ts_vec3* end, ts_f64 x, ts_vec3* result);
+ts_vec3* ts_interpolate_linear3_d(const ts_vec3* start, const ts_vec3* end, ts_vec3* result);
+ts_vec3* ts_interpolate_linear3_dd(ts_vec3* result);
+ts_quat* ts_interpolate_slerp(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_quat* result);
+ts_quat* ts_interpolate_slerp_d(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_f64 dx, ts_quat* result);
+ts_quat* ts_interpolate_slerp_dd(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_f64 dx, ts_f64 ddx, ts_quat* result);
 
 #endif  // TS_H_
