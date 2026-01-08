@@ -37,11 +37,24 @@ typedef struct {
 
 /* Quaternion */
 typedef struct {
-    double w; /* W-component (real part) */
-    double x; /* X-component (first imaginary part) */
-    double y; /* Y-component (second imaginary part) */
-    double z; /* Z-component (third imaginary part) */
+    ts_f64 w; /* W-component (real part) */
+    ts_f64 x; /* X-component (first imaginary part) */
+    ts_f64 y; /* Y-component (second imaginary part) */
+    ts_f64 z; /* Z-component (third imaginary part) */
 } ts_quat;
+
+/* 3x3 matrix */
+typedef struct {
+    ts_f64 xx; /* First row and first column */
+    ts_f64 xy; /* First row and second column */
+    ts_f64 xz; /* First row and third column */
+    ts_f64 yx; /* Second row and first column */
+    ts_f64 yy; /* Second row and second column */
+    ts_f64 yz; /* Second row and third column */
+    ts_f64 zx; /* Third row and first column */
+    ts_f64 zy; /* Third row and second column */
+    ts_f64 zz; /* Third row and third column */
+} ts_mat3x3;
 
 /* Adds the vectors a and b. */
 ts_vec3* ts_vec3_add(const ts_vec3* a, const ts_vec3* b, ts_vec3* result);
@@ -87,10 +100,23 @@ ts_quat* ts_quat_mul(const ts_quat* a, const ts_quat* b, ts_quat* result);
  * w-axis is returned. So this function will always return a quaternion  with the l2 norm of one.*/
 ts_quat* ts_quat_normalize(const ts_quat* q, ts_quat* result);
 
+/* Adds the matrices a and b. */
+ts_mat3x3* ts_mat3x3_add(const ts_mat3x3* a, const ts_mat3x3* b, ts_mat3x3* result);
 
+/* Subtracts the matrix b from the matrix a. */
+ts_mat3x3* ts_mat3x3_sub(const ts_mat3x3* a, const ts_mat3x3* b, ts_mat3x3* result);
 
+/* Multiplies the matrices a and b. */
+ts_mat3x3* ts_mat3x3_mul(const ts_mat3x3* a, const ts_mat3x3* b, ts_mat3x3* result);
 
+/* Multiplies the matrix a with the vector b. */
+ts_vec3* ts_mat3x3_vec3_mul(const ts_mat3x3* a, const ts_vec3* b, ts_vec3* result);
 
+/* Converts the matrix m to a unit quaternion. It is expected that m represents a valid orientation. */
+ts_quat* ts_mat3x3_to_quat(const ts_mat3x3* m, ts_quat* result);
+
+/* Converts the quaternion q to an orientation matrix. It is expected that q is a unit quaternion. */
+ts_mat3x3* ts_quat_to_mat3x3(const ts_quat* q, ts_mat3x3* result);
 
 typedef struct {
     ts_vec3 pos;
