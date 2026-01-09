@@ -118,6 +118,18 @@ ts_quat* ts_mat3x3_to_quat(const ts_mat3x3* m, ts_quat* result);
 /* Converts the quaternion q to an orientation matrix. It is expected that q is a unit quaternion. */
 ts_mat3x3* ts_quat_to_mat3x3(const ts_quat* q, ts_mat3x3* result);
 
+/* Converts the vector v to an imaginary quatenion. */
+ts_quat* ts_vec3_to_imag_quat(const ts_vec3* v, ts_quat* result);
+
+/* Converts the imaginary part of the quaternion q to a vector. */
+ts_vec3* ts_quat_imag_to_vec3(const ts_quat* q, ts_vec3* result);
+
+/* Computes the axis angle representation of the quaternion as a scaled vector. */
+ts_vec3* ts_quat_to_axis_angle_vec3(const ts_quat* q, ts_vec3* result);
+
+/* Compute the unit quaternion representation of the scaled axis angle vector. */
+ts_quat* ts_vec3_axis_angle_to_quat(const ts_vec3* v, ts_quat *result);
+
 typedef struct {
     ts_vec3 pos;
     ts_quat orient;

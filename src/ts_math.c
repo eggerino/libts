@@ -224,3 +224,52 @@ ts_mat3x3* ts_quat_to_mat3x3(const ts_quat* q, ts_mat3x3* result) {
     result->zz = 1.0 - 2.0 * (q->x * q->x + q->y * q->y);
     return result;
 }
+
+ts_quat* ts_vec3_to_imag_quat(const ts_vec3* v, ts_quat* result) {
+    result->w = 0.0;
+    result->x = v->x;
+    result->y = v->y;
+    result->z = v->z;
+    return result;
+}
+
+ts_vec3* ts_quat_imag_to_vec3(const ts_quat* q, ts_vec3* result) {
+    result->x = q->x;
+    result->y = q->y;
+    result->z = q->z;
+    return result;
+}
+
+ts_vec3* ts_quat_to_axis_angle_vec3(const ts_quat* q, ts_vec3* result) {
+    if (1.0 - q->w * q->w < TS_EPS) {
+        result->x = 0.0;
+        result->y = 0.0;
+        result->z = 0.0;
+        return result;
+    }
+
+    ts_f64 angle = 2.0 * ts_acos(q->w);
+    ts_f64 factor = angle / ts_sqrt(1.0 - q->w * q->w);
+    result->x = q->x * factor;
+    result->y = q->y * factor;
+    result->z = q->z * factor;
+    return result;
+}
+
+ts_quat* ts_vec3_axis_angle_to_quat(const ts_vec3* v, ts_quat* result) {
+    ts_f64 angle = ts_vec3_norm_l2(v);
+    if (angle < TS_EPS) {
+        result->w = 1.0;
+        result->x = 0.0;
+        result->y = 0.0;
+        result->z = 0.0;
+        return result;
+    }
+
+    ts_f64 factor = ts_sin(0.5 * angle) / angle;
+    result->w = ts_cos(0.5 * angle);
+    result->x = v->x * factor;
+    result->y = v->y * factor;
+    result->z = v->z * factor;
+    return result;
+}
