@@ -17,8 +17,14 @@ target_link_libraries(tssyslibc m)
 # -- tests --
 enable_testing()
 
-add_executable(test_interpolation test/test_interpolation.c)
+add_executable(test_interpolation test/interpolation.c)
 target_include_directories(test_interpolation PRIVATE include)
 target_link_libraries(test_interpolation ts)
 target_link_libraries(test_interpolation tssyslibc)
 add_test(test_interpolation test_interpolation)
+
+add_executable(test_math test/math.c)
+target_include_directories(test_math PRIVATE include)
+target_link_libraries(test_math ts)
+target_link_libraries(test_math tssyslibc)
+add_test(test_math test_math)

@@ -1,15 +1,5 @@
-#include <assert.h>
-#include <stdio.h>
-
+#include "common.h"
 #include "ts.h"
-
-#define EPS 1e-15
-#define assert_eps(exp, act) assert((exp) - EPS < (act) && (exp) + EPS > (act))
-#define assert_vec3(exp, act) \
-    assert_eps(exp.x, act.x); \
-    assert_eps(exp.y, act.y); \
-    assert_eps(exp.z, act.z)
-#define assert_quat(exp, act) assert_vec3((exp), (act)), assert_eps(exp.w, act.w)
 
 void test_interpolate_linear1(void) {
     assert_eps(0, ts_interpolate_linear1(0, 1, 0));
