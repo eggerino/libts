@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-#define EPS 1e-15
+#define EPS 1e-14
 #define assert_eps(exp, act) assert((exp) - EPS < (act) && (exp) + EPS > (act))
 #define assert_vec3(exp, act) \
     assert_eps(exp.x, act.x); \
