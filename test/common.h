@@ -1,10 +1,19 @@
 #ifndef TEST_COMMON_H_
 #define TEST_COMMON_H_
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 #define EPS 1e-14
-#define assert_eps(exp, act) assert((exp) - EPS < (act) && (exp) + EPS > (act))
+
+void assert_eps(double exp, double act) {
+    if (act < exp - EPS || act > exp + EPS) {
+        fprintf(stderr, "exp=%f act=%f\n", exp, act);
+        exit(1);
+    }
+}
+
 #define assert_vec3(exp, act) \
     assert_eps(exp.x, act.x); \
     assert_eps(exp.y, act.y); \

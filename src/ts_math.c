@@ -157,8 +157,13 @@ ts_mat3x3* ts_mat3x3_mul(const ts_mat3x3* a, const ts_mat3x3* b, ts_mat3x3* resu
     result->xx = xx;
     result->xy = xy;
     result->xz = xz;
+
+    result->yx = yx;
     result->yy = yy;
     result->yz = yz;
+
+    result->zx = zx;
+    result->zy = zy;
     result->zz = zz;
     return result;
 }
@@ -180,30 +185,30 @@ ts_quat* ts_mat3x3_to_quat(const ts_mat3x3* m, ts_quat* result) {
     if (m->zz < 0) {
         if (m->xx > m->yy) {
             t = 1 + m->xx - m->yy - m->zz;
-            result->w = t;
-            result->x = m->xy + m->yx;
-            result->y = m->zx + m->xz;
-            result->z = m->yz - m->zy;
+            result->w = -m->yz + m->zy;
+            result->x = t;
+            result->y = m->xy + m->yx;
+            result->z = m->zx + m->xz;
         } else {
             t = 1 - m->xx + m->yy - m->zz;
-            result->w = m->xy + m->yx;
-            result->x = t;
-            result->y = m->yz + m->zy;
-            result->z = m->zx - m->xz;
+            result->w = -m->zx + m->xz;
+            result->x = m->xy + m->yx;
+            result->y = t;
+            result->z = m->yz + m->zy;
         }
     } else {
         if (m->xx < -m->yy) {
             t = 1 - m->xx - m->yy + m->zz;
-            result->w = m->zx + m->xz;
-            result->x = m->yz + m->zy;
-            result->y = t;
-            result->z = m->xy - m->yx;
+            result->w = -m->xy + m->yx;
+            result->x = m->zx + m->xz;
+            result->y = m->yz + m->zy;
+            result->z = t;
         } else {
             t = 1 + m->xx + m->yy + m->zz;
-            result->w = m->yz - m->zy;
-            result->x = m->zx - m->xz;
-            result->y = m->xy - m->yx;
-            result->z = t;
+            result->w = -t;
+            result->x = m->yz - m->zy;
+            result->y = m->zx - m->xz;
+            result->z = m->xy - m->yx;
         }
     }
     factor = 0.5 / ts_sqrt(t);
@@ -215,7 +220,7 @@ ts_mat3x3* ts_quat_to_mat3x3(const ts_quat* q, ts_mat3x3* result) {
     result->xy = 2.0 * (-q->w * q->z + q->x * q->y);
     result->xz = 2.0 * (q->w * q->y + q->x * q->z);
 
-    result->xy = 2.0 * (q->w * q->z + q->x * q->y);
+    result->yx = 2.0 * (q->w * q->z + q->x * q->y);
     result->yy = 1.0 - 2.0 * (q->x * q->x + q->z * q->z);
     result->yz = 2.0 * (-q->w * q->x + q->y * q->z);
 
