@@ -185,7 +185,7 @@ void test_mat3x3_vec3_mul(void) {
     assert_vec3(exp, act);
 }
 
-void test_mat3x3_to_quat(void) {
+void test_mat3x3_to_quat1(void) {
     ts_mat3x3 m = {
         0.41198225991309989, 0.05872672981356003, 0.90929742922092005,
         -0.6812427255054001, -0.64287283953050012, 0.35017557591120008,
@@ -193,6 +193,45 @@ void test_mat3x3_to_quat(void) {
     };
     ts_quat act = {0};
     ts_quat exp = {-0.36887138766997318, 0.75493381109501456, -0.20614919310918339, 0.50150908323637811};
+
+    ts_mat3x3_to_quat(&m, &act);
+    assert_quat(exp, act);
+}
+
+void test_mat3x3_to_quat2(void) {
+    ts_mat3x3 m = {
+        -0.5348952, -0.0762475,  0.8414710,
+        -0.8162168,  0.3040046, -0.4912955,
+        -0.2183511, -0.9496144, -0.2248451,
+    };
+    ts_quat act = {0};
+    ts_quat exp = {0.36887139593729373, -0.31062246405807137, 0.71828698336410923, -0.50150911764612793 };
+
+    ts_mat3x3_to_quat(&m, &act);
+    assert_quat(exp, act);
+}
+
+void test_mat3x3_to_quat3(void) {
+    ts_mat3x3 m = {
+        -0.2248451,  0.3501755,  0.9092974,
+        -0.7637183, -0.6428728,  0.0587266,
+        0.6051273, -0.6812427,  0.4119822,
+    };
+    ts_quat act = {0};
+    ts_quat exp = {-0.36887137091079952, 0.50150913420128229, -0.20614924620376229, 0.75493380008190059};
+
+    ts_mat3x3_to_quat(&m, &act);
+    assert_quat(exp, act);
+}
+
+void test_mat3x3_to_quat4(void) {
+    ts_mat3x3 m = {
+         0.4119822,  0.9001976,  0.1411200,
+        -0.4318012,  0.0564971,  0.9001976,
+        0.8023829, -0.4318012,  0.4119822,
+    };
+    ts_quat act = {0};
+    ts_quat exp = {-0.68564959653235036, 0.48567038567515614, 0.24110818093505204, 0.48567038567515614};
 
     ts_mat3x3_to_quat(&m, &act);
     assert_quat(exp, act);
@@ -252,7 +291,10 @@ int main(void) {
     test_mat3x3_mul();
     test_mat3x3_vec3_mul();
 
-    test_mat3x3_to_quat();
+    test_mat3x3_to_quat1();
+    test_mat3x3_to_quat2();
+    test_mat3x3_to_quat3();
+    test_mat3x3_to_quat4();
     test_quat_to_mat3x3();
     test_vec3_to_imag_quat();
     test_quat_imag_to_vec3();

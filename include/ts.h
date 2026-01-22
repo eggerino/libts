@@ -128,7 +128,7 @@ ts_vec3* ts_quat_imag_to_vec3(const ts_quat* q, ts_vec3* result);
 ts_vec3* ts_quat_to_axis_angle_vec3(const ts_quat* q, ts_vec3* result);
 
 /* Compute the unit quaternion representation of the scaled axis angle vector. */
-ts_quat* ts_vec3_axis_angle_to_quat(const ts_vec3* v, ts_quat *result);
+ts_quat* ts_vec3_axis_angle_to_quat(const ts_vec3* v, ts_quat* result);
 
 typedef struct {
     ts_vec3 pos;
