@@ -54,5 +54,6 @@ ts_f64 ts_sqrt(ts_f64 x);
 ts_f64 ts_sin(ts_f64 x);
 ts_f64 ts_cos(ts_f64 x);
 ts_f64 ts_acos(ts_f64 x);
+ts_f64 ts_atan2(ts_f64 y, ts_f64 x);
 
 #endif  // TS_SYS_H_

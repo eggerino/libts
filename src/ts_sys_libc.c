@@ -12,3 +12,4 @@ ts_f64 ts_sqrt(ts_f64 x) { return sqrt(x); }
 ts_f64 ts_sin(ts_f64 x) { return sin(x); }
 ts_f64 ts_cos(ts_f64 x) { return cos(x); }
 ts_f64 ts_acos(ts_f64 x) { return acos(x); }
+ts_f64 ts_atan2(ts_f64 y, ts_f64 x) { return atan2(y, x); }
