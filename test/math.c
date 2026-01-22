@@ -268,7 +268,41 @@ void test_quat_imag_to_vec3(void) {
     assert_vec3(exp, act);
 }
 
-// TODO Axis angle tests
+void test_quat_to_axis_angle_vec3_1(void) {
+    ts_quat q = {-1, 0, 0, 0};
+    ts_vec3 act = {0};
+    ts_vec3 exp = {0, 0, 0};
+    
+    ts_quat_to_axis_angle_vec3(&q, &act);
+    assert_vec3(exp, act);
+}
+
+void test_quat_to_axis_angle_vec3_2(void) {
+    ts_quat q = {-0.6856496, 0.4856704, 0.2411082, 0.4856704};
+    ts_vec3 act = {0};
+    ts_vec3 exp = {3.1041679218364981, 1.5410458206465512, 3.1041679218364981};
+    
+    ts_quat_to_axis_angle_vec3(&q, &act);
+    assert_vec3(exp, act);
+}
+
+void test_vec3_axis_angle_to_quat1(void) {
+    ts_vec3 v = {0, 0, 0};
+    ts_quat act = {0};
+    ts_quat exp = {1, 0, 0, 0};
+    
+    ts_vec3_axis_angle_to_quat(&v, &act);
+    assert_quat(exp, act);
+}
+
+void test_vec3_axis_angle_to_quat2(void) {
+    ts_vec3 v = {3.1041679218364981, 1.5410458206465512, 3.1041679218364981};
+    ts_quat act = {0};
+    ts_quat exp = {-0.68564962070804958, 0.48567038104709903, 0.24110819059094432, 0.48567038104709903};
+    
+    ts_vec3_axis_angle_to_quat(&v, &act);
+    assert_quat(exp, act);
+}
 
 int main(void) {
     test_vec3_add();
@@ -298,5 +332,9 @@ int main(void) {
     test_quat_to_mat3x3();
     test_vec3_to_imag_quat();
     test_quat_imag_to_vec3();
+    test_quat_to_axis_angle_vec3_1();
+    test_quat_to_axis_angle_vec3_2();
+    test_vec3_axis_angle_to_quat1();
+    test_vec3_axis_angle_to_quat2();
     return 0;
 }
