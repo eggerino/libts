@@ -130,6 +130,77 @@ ts_vec3* ts_quat_to_axis_angle_vec3(const ts_quat* q, ts_vec3* result);
 /* Compute the unit quaternion representation of the scaled axis angle vector. */
 ts_quat* ts_vec3_axis_angle_to_quat(const ts_vec3* v, ts_quat* result);
 
+/*
+ * +----------------------+
+ * | Interpolation module |
+ * +----------------------+
+ *
+ * Data types and operations for general interpolation.
+ *
+ * If these functions return a struct, the result memory is passed as a pointer.
+ * The same pointer is also returned, so you can build expresseions like:
+ *
+ * y = ts_linear1_at(ts_linear1_init(start, end, &l1), x);
+ *
+ * It is always safe to pass the same pointer as the result parameter to reassign the result.
+ */
+
+/* State of an one dimensional linear interpolation */
+typedef struct {
+    ts_f64 start; /* Start value */
+    ts_f64 delta; /* Difference between start and end value */
+} ts_linear1_state;
+
+/* State of a three dimensional linear interpolation */
+typedef struct {
+    ts_vec3 start; /* Start value */
+    ts_vec3 delta; /* Difference between start and end value */
+} ts_linear3_state;
+
+/* State of a spherical linear interpolation */
+typedef struct {
+    ts_quat start;             /* Start value */
+    ts_quat end;               /* End value*/
+    ts_f64 omega;              /* Angle between start and end value */
+    ts_f64 one_over_sin_omega; /* Precomputed value */
+} ts_slerp_state;
+
+/* Initialize an one dimensional linear interpolation state. */
+ts_linear1_state* ts_linear1_init(ts_f64 start, ts_f64 end, ts_linear1_state* inst);
+
+/* Interpolate at the value x. */
+ts_f64 ts_linear1(const ts_linear1_state* inst, ts_f64 x);
+
+/* Compute the first derivative with repect to x. */
+ts_f64 ts_linear1_d(const ts_linear1_state* inst);
+
+/* Compute the second derivative with repect to x. */
+ts_f64 ts_linear1_dd(ts_none);
+
+/* Initialize a three dimensional linear interpolation state. */
+ts_linear3_state* ts_linear3_init(const ts_vec3* start, const ts_vec3* end, ts_linear3_state* inst);
+
+/* Interpolate at the value x. */
+ts_vec3* ts_linear3(const ts_linear3_state* inst, ts_f64 x, ts_vec3* result);
+
+/* Compute the first derivative with repect to x. */
+ts_vec3* ts_linear3_d(const ts_linear3_state* inst, ts_vec3* result);
+
+/* Compute the second derivative with repect to x. */
+ts_vec3* ts_linear3_dd(ts_vec3* result);
+
+/* Initialize a spherical linear interpolation state. */
+ts_slerp_state* ts_slerp_init(const ts_quat* start, const ts_quat* end, ts_slerp_state* inst);
+
+/* Interpolate at the value x. */
+ts_quat* ts_slerp(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
+
+/* Compute the first derivative with repect to x at x. */
+ts_quat* ts_slerp_d(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
+
+/* Compute the second derivative with repect to x at x. */
+ts_quat* ts_slerp_dd(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
+
 typedef struct {
     ts_vec3 pos;
     ts_quat orient;
@@ -140,19 +211,5 @@ typedef struct {
     ts_pose velocity;
     ts_pose acceleration;
 } ts_pose_state;
-
-// Common operations
-
-// Interpolation functions
-
-ts_f64 ts_interpolate_linear1(ts_f64 start, ts_f64 end, ts_f64 x);
-ts_f64 ts_interpolate_linear1_d(ts_f64 start, ts_f64 end);
-ts_f64 ts_interpolate_linear1_dd();
-ts_vec3* ts_interpolate_linear3(const ts_vec3* start, const ts_vec3* end, ts_f64 x, ts_vec3* result);
-ts_vec3* ts_interpolate_linear3_d(const ts_vec3* start, const ts_vec3* end, ts_vec3* result);
-ts_vec3* ts_interpolate_linear3_dd(ts_vec3* result);
-ts_quat* ts_interpolate_slerp(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_quat* result);
-ts_quat* ts_interpolate_slerp_d(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_f64 dx, ts_quat* result);
-ts_quat* ts_interpolate_slerp_dd(const ts_quat* start, const ts_quat* end, ts_f64 x, ts_f64 dx, ts_f64 ddx, ts_quat* result);
 
 #endif  // TS_H_
