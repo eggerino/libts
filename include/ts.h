@@ -11,6 +11,12 @@
 /* Precision of the library. Values smaller than this are considered zero. */
 #define TS_EPS 1e-15
 
+/* Result of a function which needs dynamic memory */
+typedef enum {
+    TS_ALLOC_OK = 0, /* No error */
+    TS_ALLOC_ERR,    /* Allocation failed */
+} ts_allocation_error;
+
 /*
  * +-------------+
  * | Math module |
@@ -165,6 +171,13 @@ typedef struct {
     ts_f64 one_over_sin_omega; /* Precomputed value */
 } ts_slerp_state;
 
+/* State of a three dimensional bezier interpolation. It holds data to dynamic memory. */
+typedef struct {
+    ts_vec3* points;     /* Array of the control points */
+    ts_usize num_points; /* Number of control points in the array */
+    ts_ptr buffer;       /* Memory for computation */
+} ts_bezier_state;
+
 /* Initialize an one dimensional linear interpolation state. */
 ts_linear1_state* ts_linear1_init(ts_f64 start, ts_f64 end, ts_linear1_state* inst);
 
@@ -200,6 +213,24 @@ ts_quat* ts_slerp_d(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
 
 /* Compute the second derivative with repect to x at x. */
 ts_quat* ts_slerp_dd(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
+
+/* Initialize a three dimensional bezier interpolation state. This function uses dynamic memory. Make sure to call
+ * `ts_bezier_deinit` after usage. */
+ts_allocation_error ts_bezier_init(const ts_vec3* points, ts_usize num_points, ts_bezier_state* inst);
+
+/* Deinitialize a three dimensional bezier interpolation state. */
+ts_none ts_bezier_deinit(ts_bezier_state* inst);
+
+/* Interpolate at the value x */
+ts_vec3* ts_bezier(const ts_bezier_state* inst, ts_f64 x, ts_vec3* result);
+
+/* Compute up to the first derivative with respect to x at x. It returns the first derivative pointer. The value pointer can
+ * be `NULL` if only the derivative is needed. */
+ts_vec3* ts_bezier_d(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* result);
+
+/* Compute up to the second derivative with respect to x at x. It returns the second derivative pointer. The value and first
+ * derivative pointer can be `NULL` if they are not needed. */
+ts_vec3* ts_bezier_dd(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* first_der, ts_vec3* result);
 
 typedef struct {
     ts_vec3 pos;
