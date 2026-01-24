@@ -1,10 +1,14 @@
 # Polynomial of order 5
 
-The function and its first and second derivative are the following: 
+## Function
+
+The function and its first and second derivative are the following 
 
 $$ \vec f(x) = \vec a_0 + \vec a_1 x + \vec a_2 x^2 + \vec a_3 x^3 + \vec a_4 x^4 + \vec a_5 x^5 $$
 $$ \vec f'(x) = \vec a_1 + 2 \vec a_2 x + 3 \vec a_3 x^2 + 4 \vec a_4 x^3 + 5 \vec a_5 x^4 $$
 $$ \vec f''(x) = 2 \vec a_2 + 6 \vec a_3 x + 12 \vec a_4 x^2 + 20 \vec a_5 x^3 $$
+
+## Determine coefficients by constraints
 
 When setting x to $ 0 $ or $ 1 $ as these are the limits of interpolation, the following expressions for these constraints are
 
@@ -33,20 +37,14 @@ $$ \boxed R \cdot \vec a = \vec b $$
 
 with
 
-$$ \boxed R = \begin{bmatrix} 1 & 1 & 1\\3 & 4 & 5\\6 & 12 & 20 \end{bmatrix} $$
-$$ \vec a = \begin{bmatrix} a_{3,i}\\a_{4,i}\\a_{5,i} \end{bmatrix} $$
-$$ \vec b = \begin{bmatrix} c_i\\d_i\\e_i \end{bmatrix} $$
+$$ \boxed R = \begin{bmatrix} 1 & 1 & 1 \\ 3 & 4 & 5 \\ 6 & 12 & 20 \end{bmatrix} $$
+$$ \vec a = \begin{bmatrix} a_{3,i} \\ a_{4,i} \\ a_{5,i} \end{bmatrix} $$
+$$ \vec b = \begin{bmatrix} c_i \\ d_i \\ e_i \end{bmatrix} $$
 
 By inversing the matrix $ \boxed R $ the last three coefficients can be computed
 
 $$ \vec a = \boxed R ^ {-1} \cdot \vec b $$
-$$ \boxed R ^ {-1} = 
-\begin{bmatrix}
-10 & -4 & \frac12\\
--15 & 7 & -1\\
-6 & -3 & \frac12
-\end{bmatrix}
-$$
+$$ \boxed R ^ {-1} = \begin{bmatrix} 10 & -4 & \frac12 \\ -15 & 7 & -1 \\ 6 & -3 & \frac12 \end{bmatrix} $$
 
 $$ a_{3,i} = 10 c_i - 4 d_i + \frac{e_i}{2} $$
 $$ a_{4,i} = -15 c_i + 7 d_i - e_i $$
