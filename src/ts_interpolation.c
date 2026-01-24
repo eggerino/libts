@@ -5,6 +5,10 @@
     (dest).x = (src).x;      \
     (dest).y = (src).y;      \
     (dest).z = (src).z
+#define vec3_zero(v) \
+    (v).x = 0;       \
+    (v).y = 0;       \
+    (v).z = 0
 
 #define quat_copy(src, dest)  \
     vec3_copy((src), (dest)); \
@@ -113,14 +117,41 @@ ts_none ts_bezier_deinit(ts_bezier_state* inst) {
     ts_mem_free(inst->buffer);
 }
 
-ts_vec3* ts_bezier(const ts_bezier_state* inst, ts_f64 x, ts_vec3* result) {
-    ts_vec3* prev = inst->buffer;
-    ts_vec3* cur = &(((ts_vec3*)(inst->buffer))[inst->num_points]);
+#define BEZIER_SEGMENT(inst, page) &(((ts_vec3*)((inst).buffer))[(page) * (inst).num_points])
 
-    /* Populate the previous point buffer with the control points */
+#define BEZIER_SWAP_SEGMENT(a, b) \
+    temp = a;                     \
+    a = b;                        \
+    b = temp
+
+#define BEZIER_COMPUTE_NEXT_VALUE                          \
+    ts_vec3_scale(&(prev_value[idx]), one_minus_x, &left); \
+    ts_vec3_scale(&(prev_value[idx + 1]), x, &right);      \
+    ts_vec3_add(&left, &right, &(cur_value[idx]))
+
+#define BEZIER_COMPUTE_NEXT_FIRST_DER                          \
+    ts_vec3_scale(&(prev_first_der[idx]), one_minus_x, &left); \
+    ts_vec3_sub(&left, &(prev_value[idx]), &left);             \
+    ts_vec3_scale(&(prev_first_der[idx + 1]), x, &right);      \
+    ts_vec3_add(&right, &(prev_value[idx + 1]), &right);       \
+    ts_vec3_add(&left, &right, &(cur_first_der[idx]))
+
+#define BEZIER_COMPUTE_NEXT_SECOND_DER                          \
+    ts_vec3_scale(&(prev_second_der[idx]), one_minus_x, &left); \
+    ts_vec3_sub(&left, &(prev_first_der[idx]), &left);          \
+    ts_vec3_sub(&left, &(prev_first_der[idx]), &left);          \
+    ts_vec3_scale(&(prev_second_der[idx + 1]), x, &right);      \
+    ts_vec3_add(&right, &(prev_first_der[idx + 1]), &right);    \
+    ts_vec3_add(&right, &(prev_first_der[idx + 1]), &right);    \
+    ts_vec3_add(&left, &right, &(cur_second_der[idx]))
+
+ts_vec3* ts_bezier(const ts_bezier_state* inst, ts_f64 x, ts_vec3* result) {
+    ts_vec3* prev_value = BEZIER_SEGMENT(*inst, 0);
+    ts_vec3* cur_value = BEZIER_SEGMENT(*inst, 1);
+
     ts_usize i;
     for (i = 0; i < inst->num_points; ++i) {
-        vec3_copy(inst->points[i], prev[i]);
+        vec3_copy(inst->points[i], prev_value[i]);
     }
 
     ts_f64 one_minus_x = 1.0 - x;
@@ -131,22 +162,93 @@ ts_vec3* ts_bezier(const ts_bezier_state* inst, ts_f64 x, ts_vec3* result) {
             ts_vec3 left;
             ts_vec3 right;
 
-            ts_vec3_scale(&(prev[idx]), one_minus_x, &left);
-            ts_vec3_scale(&(prev[idx + 1]), x, &right);
-            ts_vec3_add(&left, &right, &(cur[idx]));
+            BEZIER_COMPUTE_NEXT_VALUE;
         }
 
-        /* Swap the pages of the buffer */
-        ts_ptr temp = cur;
-        cur = prev;
-        prev = temp;
+        ts_ptr temp;
+        BEZIER_SWAP_SEGMENT(cur_value, prev_value);
     }
 
-    vec3_copy(*prev, *result);
+    vec3_copy(*prev_value, *result);
     return result;
 }
-// TODO
-ts_vec3* ts_bezier_d(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* result);
 
-// TODO
-ts_vec3* ts_bezier_dd(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* first_der, ts_vec3* result);
+ts_vec3* ts_bezier_d(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* result) {
+    ts_vec3* prev_value = BEZIER_SEGMENT(*inst, 0);
+    ts_vec3* prev_first_der = BEZIER_SEGMENT(*inst, 1);
+    ts_vec3* cur_value = BEZIER_SEGMENT(*inst, 2);
+    ts_vec3* cur_first_der = BEZIER_SEGMENT(*inst, 3);
+
+    ts_usize i;
+    for (i = 0; i < inst->num_points; ++i) {
+        vec3_copy(inst->points[i], prev_value[i]);
+        vec3_zero(prev_first_der[i]);
+    }
+
+    ts_f64 one_minus_x = 1.0 - x;
+    ts_usize level;
+    for (level = 1; level < inst->num_points; ++level) {
+        ts_usize idx;
+        for (idx = 0; idx < (inst->num_points - level); ++idx) {
+            ts_vec3 left;
+            ts_vec3 right;
+
+            BEZIER_COMPUTE_NEXT_VALUE;
+            BEZIER_COMPUTE_NEXT_FIRST_DER;
+        }
+
+        ts_ptr temp;
+        BEZIER_SWAP_SEGMENT(cur_value, prev_value);
+        BEZIER_SWAP_SEGMENT(cur_first_der, prev_first_der);
+    }
+
+    if (value) {
+        vec3_copy(*prev_value, *value);
+    }
+    vec3_copy(*prev_first_der, *result);
+    return result;
+}
+
+ts_vec3* ts_bezier_dd(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* first_der, ts_vec3* result) {
+    ts_vec3* prev_value = BEZIER_SEGMENT(*inst, 0);
+    ts_vec3* prev_first_der = BEZIER_SEGMENT(*inst, 1);
+    ts_vec3* prev_second_der = BEZIER_SEGMENT(*inst, 2);
+    ts_vec3* cur_value = BEZIER_SEGMENT(*inst, 3);
+    ts_vec3* cur_first_der = BEZIER_SEGMENT(*inst, 4);
+    ts_vec3* cur_second_der = BEZIER_SEGMENT(*inst, 5);
+
+    ts_usize i;
+    for (i = 0; i < inst->num_points; ++i) {
+        vec3_copy(inst->points[i], prev_value[i]);
+        vec3_zero(prev_first_der[i]);
+        vec3_zero(prev_second_der[i]);
+    }
+
+    ts_f64 one_minus_x = 1.0 - x;
+    ts_usize level;
+    for (level = 1; level < inst->num_points; ++level) {
+        ts_usize idx;
+        for (idx = 0; idx < (inst->num_points - level); ++idx) {
+            ts_vec3 left;
+            ts_vec3 right;
+
+            BEZIER_COMPUTE_NEXT_VALUE;
+            BEZIER_COMPUTE_NEXT_FIRST_DER;
+            BEZIER_COMPUTE_NEXT_SECOND_DER;
+        }
+
+        ts_ptr temp;
+        BEZIER_SWAP_SEGMENT(cur_value, prev_value);
+        BEZIER_SWAP_SEGMENT(cur_first_der, prev_first_der);
+        BEZIER_SWAP_SEGMENT(cur_second_der, prev_second_der);
+    }
+
+    if (value) {
+        vec3_copy(*prev_value, *value);
+    }
+    if (first_der) {
+        vec3_copy(*prev_first_der, *first_der);
+    }
+    vec3_copy(*prev_second_der, *result);
+    return result;
+}
