@@ -14,6 +14,11 @@ add_library(tssyslibc STATIC
 target_include_directories(tssyslibc PUBLIC include)
 target_link_libraries(tssyslibc m)
 
+add_executable(sample_bezier samples/bezier.c)
+target_include_directories(sample_bezier PRIVATE include)
+target_link_libraries(sample_bezier ts)
+target_link_libraries(sample_bezier tssyslibc)
+
 # -- tests --
 enable_testing()
 
