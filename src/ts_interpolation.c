@@ -253,9 +253,42 @@ ts_vec3* ts_bezier_dd(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_
     return result;
 }
 
-// TODO
 ts_poly5_state* ts_poly5_init(const ts_vec3* start, const ts_vec3* start_d, const ts_vec3* start_dd, const ts_vec3* end,
-                              const ts_vec3* end_d, const ts_vec3* end_dd, ts_poly5_state* inst);
+                              const ts_vec3* end_d, const ts_vec3* end_dd, ts_poly5_state* inst) {
+    vec3_copy(*start, inst->coeffs[0]);
+    vec3_copy(*start_d, inst->coeffs[1]);
+    ts_vec3_scale(start_dd, 0.5, &(inst->coeffs[2]));
+
+    ts_vec3 c, d, e, temp;
+    ts_vec3_scale(start_dd, 0.5, &temp);
+    ts_vec3_add(start, ts_vec3_add(start_d, &temp, &temp), &temp);
+    ts_vec3_sub(end, &temp, &c);
+
+    ts_vec3_add(start_d, start_dd, &temp);
+    ts_vec3_sub(end_d, &temp, &d);
+
+    ts_vec3_sub(end_dd, start_dd, &e);
+
+    ts_vec3_scale(&c, 10, &(inst->coeffs[3]));
+    ts_vec3_scale(&d, -4, &temp);
+    ts_vec3_add(&(inst->coeffs[3]), &temp, &(inst->coeffs[3]));
+    ts_vec3_scale(&e, 0.5, &temp);
+    ts_vec3_add(&(inst->coeffs[3]), &temp, &(inst->coeffs[3]));
+
+    ts_vec3_scale(&c, -15, &(inst->coeffs[4]));
+    ts_vec3_scale(&d, 7, &temp);
+    ts_vec3_add(&(inst->coeffs[4]), &temp, &(inst->coeffs[4]));
+    ts_vec3_scale(&e, -1, &temp);
+    ts_vec3_add(&(inst->coeffs[4]), &temp, &(inst->coeffs[4]));
+
+    ts_vec3_scale(&c, 6, &(inst->coeffs[5]));
+    ts_vec3_scale(&d, -3, &temp);
+    ts_vec3_add(&(inst->coeffs[5]), &temp, &(inst->coeffs[5]));
+    ts_vec3_scale(&e, 0.5, &temp);
+    ts_vec3_add(&(inst->coeffs[5]), &temp, &(inst->coeffs[5]));
+
+    return inst;
+}
 
 ts_vec3* ts_poly5(const ts_poly5_state* inst, ts_f64 x, ts_vec3* result) {
     vec3_copy(inst->coeffs[0], *result);
