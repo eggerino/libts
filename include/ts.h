@@ -178,16 +178,21 @@ typedef struct {
     ts_ptr buffer;       /* Memory for computation */
 } ts_bezier_state;
 
+/* State of a three dimensional polynomial of order 5 */
+typedef struct {
+    ts_vec3 coeffs[6]; /* Coefficients of the polynomial */
+} ts_poly5_state;
+
 /* Initialize an one dimensional linear interpolation state. */
 ts_linear1_state* ts_linear1_init(ts_f64 start, ts_f64 end, ts_linear1_state* inst);
 
 /* Interpolate at the value x. */
 ts_f64 ts_linear1(const ts_linear1_state* inst, ts_f64 x);
 
-/* Compute the first derivative with repect to x. */
+/* Compute the first derivative with respect to x. */
 ts_f64 ts_linear1_d(const ts_linear1_state* inst);
 
-/* Compute the second derivative with repect to x. */
+/* Compute the second derivative with respect to x. */
 ts_f64 ts_linear1_dd(ts_none);
 
 /* Initialize a three dimensional linear interpolation state. */
@@ -196,10 +201,10 @@ ts_linear3_state* ts_linear3_init(const ts_vec3* start, const ts_vec3* end, ts_l
 /* Interpolate at the value x. */
 ts_vec3* ts_linear3(const ts_linear3_state* inst, ts_f64 x, ts_vec3* result);
 
-/* Compute the first derivative with repect to x. */
+/* Compute the first derivative with respect to x. */
 ts_vec3* ts_linear3_d(const ts_linear3_state* inst, ts_vec3* result);
 
-/* Compute the second derivative with repect to x. */
+/* Compute the second derivative with respect to x. */
 ts_vec3* ts_linear3_dd(ts_vec3* result);
 
 /* Initialize a spherical linear interpolation state. */
@@ -208,10 +213,10 @@ ts_slerp_state* ts_slerp_init(const ts_quat* start, const ts_quat* end, ts_slerp
 /* Interpolate at the value x. */
 ts_quat* ts_slerp(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
 
-/* Compute the first derivative with repect to x at x. */
+/* Compute the first derivative with respect to x at x. */
 ts_quat* ts_slerp_d(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
 
-/* Compute the second derivative with repect to x at x. */
+/* Compute the second derivative with respect to x at x. */
 ts_quat* ts_slerp_dd(const ts_slerp_state* inst, ts_f64 x, ts_quat* result);
 
 /* Initialize a three dimensional bezier interpolation state. This function uses dynamic memory. Make sure to call
@@ -231,6 +236,20 @@ ts_vec3* ts_bezier_d(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_v
 /* Compute up to the second derivative with respect to x at x. It returns the second derivative pointer. The value and first
  * derivative pointer can be `NULL` if they are not needed. */
 ts_vec3* ts_bezier_dd(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* first_der, ts_vec3* result);
+
+/* Initialize a three dimensional polynomial of order 5 so that the start and end condition in terms of value, first and
+ * second derivative are met. */
+ts_poly5_state* ts_poly5_init(const ts_vec3* start, const ts_vec3* start_d, const ts_vec3* start_dd, const ts_vec3* end,
+                              const ts_vec3* end_d, const ts_vec3* end_dd, ts_poly5_state* inst);
+
+/* Interpolate at the value x. */
+ts_vec3* ts_poly5(const ts_poly5_state* inst, ts_f64 x, ts_vec3* result);
+
+/* Compute the first derivative with respect to x at x. */
+ts_vec3* ts_poly5_d(const ts_poly5_state* inst, ts_f64 x, ts_vec3* result);
+
+/* Compute the second derivative with respect to x at x. */
+ts_vec3* ts_poly5_dd(const ts_poly5_state* inst, ts_f64 x, ts_vec3* result);
 
 typedef struct {
     ts_vec3 pos;
