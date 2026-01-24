@@ -26,14 +26,14 @@
 typedef void ts_none;
 typedef void* ts_ptr;
 
-// unsigned integers
+// Unsigned integers
 typedef uint8_t ts_u8;
 typedef uint16_t ts_u16;
 typedef uint32_t ts_u32;
 typedef uint64_t ts_u64;
 typedef size_t ts_usize;
 
-// signed integers
+// Signed integers
 typedef int8_t ts_i8;
 typedef int16_t ts_i16;
 typedef int32_t ts_i32;
@@ -50,6 +50,7 @@ ts_ptr ts_mem_alloc(ts_usize size);
 ts_none ts_mem_free(ts_ptr ptr);
 
 // Math
+ts_f64 ts_pow(ts_f64 base, ts_f64 exp);
 ts_f64 ts_sqrt(ts_f64 x);
 ts_f64 ts_sin(ts_f64 x);
 ts_f64 ts_cos(ts_f64 x);
