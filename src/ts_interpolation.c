@@ -5,26 +5,15 @@
     (dest).x = (src).x;      \
     (dest).y = (src).y;      \
     (dest).z = (src).z
+
 #define vec3_zero(v) \
     (v).x = 0;       \
     (v).y = 0;       \
     (v).z = 0
 
-#define quat_copy(src, dest)  \
-    vec3_copy((src), (dest)); \
-    (dest).w = (src).w
-
-ts_linear1_state* ts_linear1_init(ts_f64 start, ts_f64 end, ts_linear1_state* inst) {
-    inst->start = start;
-    inst->delta = end - start;
-    return inst;
-}
-
-ts_f64 ts_linear1(const ts_linear1_state* inst, ts_f64 x) { return inst->delta * x + inst->start; }
-
-ts_f64 ts_linear1_d(const ts_linear1_state* inst) { return inst->delta; }
-
-ts_f64 ts_linear1_dd(ts_none) { return 0; }
+#define quat_copy(src, dest) \
+    (dest).w = (src).w;      \
+    vec3_copy((src), (dest))
 
 ts_linear3_state* ts_linear3_init(const ts_vec3* start, const ts_vec3* end, ts_linear3_state* inst) {
     vec3_copy(*start, inst->start);
@@ -117,7 +106,7 @@ ts_none ts_bezier_deinit(ts_bezier_state* inst) {
     ts_mem_free(inst->buffer);
 }
 
-#define BEZIER_SEGMENT(inst, page) &(((ts_vec3*)((inst).buffer))[(page) * (inst).num_points])
+#define BEZIER_SEGMENT(page) &(((ts_vec3*)(inst->buffer))[(page) * inst->num_points])
 
 #define BEZIER_SWAP_SEGMENT(a, b) \
     temp = a;                     \
@@ -146,8 +135,8 @@ ts_none ts_bezier_deinit(ts_bezier_state* inst) {
     ts_vec3_add(&left, &right, &(cur_second_der[idx]))
 
 ts_vec3* ts_bezier(const ts_bezier_state* inst, ts_f64 x, ts_vec3* result) {
-    ts_vec3* prev_value = BEZIER_SEGMENT(*inst, 0);
-    ts_vec3* cur_value = BEZIER_SEGMENT(*inst, 1);
+    ts_vec3* prev_value = BEZIER_SEGMENT(0);
+    ts_vec3* cur_value = BEZIER_SEGMENT(1);
 
     ts_usize i;
     for (i = 0; i < inst->num_points; ++i) {
@@ -174,10 +163,10 @@ ts_vec3* ts_bezier(const ts_bezier_state* inst, ts_f64 x, ts_vec3* result) {
 }
 
 ts_vec3* ts_bezier_d(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* result) {
-    ts_vec3* prev_value = BEZIER_SEGMENT(*inst, 0);
-    ts_vec3* prev_first_der = BEZIER_SEGMENT(*inst, 1);
-    ts_vec3* cur_value = BEZIER_SEGMENT(*inst, 2);
-    ts_vec3* cur_first_der = BEZIER_SEGMENT(*inst, 3);
+    ts_vec3* prev_value = BEZIER_SEGMENT(0);
+    ts_vec3* prev_first_der = BEZIER_SEGMENT(1);
+    ts_vec3* cur_value = BEZIER_SEGMENT(2);
+    ts_vec3* cur_first_der = BEZIER_SEGMENT(3);
 
     ts_usize i;
     for (i = 0; i < inst->num_points; ++i) {
@@ -210,12 +199,12 @@ ts_vec3* ts_bezier_d(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_v
 }
 
 ts_vec3* ts_bezier_dd(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_vec3* first_der, ts_vec3* result) {
-    ts_vec3* prev_value = BEZIER_SEGMENT(*inst, 0);
-    ts_vec3* prev_first_der = BEZIER_SEGMENT(*inst, 1);
-    ts_vec3* prev_second_der = BEZIER_SEGMENT(*inst, 2);
-    ts_vec3* cur_value = BEZIER_SEGMENT(*inst, 3);
-    ts_vec3* cur_first_der = BEZIER_SEGMENT(*inst, 4);
-    ts_vec3* cur_second_der = BEZIER_SEGMENT(*inst, 5);
+    ts_vec3* prev_value = BEZIER_SEGMENT(0);
+    ts_vec3* prev_first_der = BEZIER_SEGMENT(1);
+    ts_vec3* prev_second_der = BEZIER_SEGMENT(2);
+    ts_vec3* cur_value = BEZIER_SEGMENT(3);
+    ts_vec3* cur_first_der = BEZIER_SEGMENT(4);
+    ts_vec3* cur_second_der = BEZIER_SEGMENT(5);
 
     ts_usize i;
     for (i = 0; i < inst->num_points; ++i) {
@@ -253,8 +242,9 @@ ts_vec3* ts_bezier_dd(const ts_bezier_state* inst, ts_f64 x, ts_vec3* value, ts_
     return result;
 }
 
-ts_poly5_state* ts_poly5_init(const ts_vec3* start, const ts_vec3* start_d, const ts_vec3* start_dd, const ts_vec3* end,
-                              const ts_vec3* end_d, const ts_vec3* end_dd, ts_poly5_state* inst) {
+ts_poly5_state* ts_poly5_init_constrained(const ts_vec3* start, const ts_vec3* start_d, const ts_vec3* start_dd,
+                                          const ts_vec3* end, const ts_vec3* end_d, const ts_vec3* end_dd,
+                                          ts_poly5_state* inst) {
     vec3_copy(*start, inst->coeffs[0]);
     vec3_copy(*start_d, inst->coeffs[1]);
     ts_vec3_scale(start_dd, 0.5, &(inst->coeffs[2]));
