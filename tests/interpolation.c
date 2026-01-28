@@ -78,14 +78,63 @@ void test_slerp_dd() {
     ts_quat_normalize(&start, &start);
     ts_quat_normalize(&end, &end);
     ts_slerp_init(&start, &end, &s);
-    ts_quat_scale(&exp, -s.omega * s.omega, &exp);    
-    
+    ts_quat_scale(&exp, -s.omega * s.omega, &exp);
+
     ts_slerp_dd(&s, x, &act);
 
     assert_quat(exp, act);
 }
 
-// TODO bezier
+void test_bezier(void) {
+    ts_vec3 points[] = {{1, 2, 3}, {2, 3, 4}, {2, 3, 4}, {1, 4, 4}};
+    ts_bezier_state s = {0};
+    ts_f64 x = 0.25;
+    ts_vec3 act = {0};
+    ts_vec3 exp = {25.0 / 16, 41.5 / 16, 229.0 / 64};
+
+    ts_bezier_init(points, 4, &s);
+    ts_bezier(&s, x, &act);
+
+    assert_vec3(exp, act);
+    ts_bezier_deinit(&s);
+}
+
+void test_bezier_d(void) {
+    ts_vec3 points[] = {{1, 2, 3}, {2, 3, 4}, {2, 3, 4}, {1, 4, 4}};
+    ts_bezier_state s = {0};
+    ts_f64 x = 0.25;
+    ts_vec3 act = {0};
+    ts_vec3 act_d = {0};
+    ts_vec3 exp = {25.0 / 16, 41.5 / 16, 229.0 / 64};
+    ts_vec3 exp_d = {24.0 / 16, 30.0 / 16, 27.0 / 16};
+
+    ts_bezier_init(points, 4, &s);
+    ts_bezier_d(&s, x, &act, &act_d);
+
+    assert_vec3(exp, act);
+    assert_vec3(exp_d, act_d);
+    ts_bezier_deinit(&s);
+}
+
+void test_bezier_dd(void) {
+    ts_vec3 points[] = {{1, 2, 3}, {2, 3, 4}, {2, 3, 4}, {1, 4, 4}};
+    ts_bezier_state s = {0};
+    ts_f64 x = 0.25;
+    ts_vec3 act = {0};
+    ts_vec3 act_d = {0};
+    ts_vec3 act_dd = {0};
+    ts_vec3 exp = {25.0 / 16, 41.5 / 16, 229.0 / 64};
+    ts_vec3 exp_d = {24.0 / 16, 30.0 / 16, 27.0 / 16};
+    ts_vec3 exp_dd = {-24.0 / 4, -12.0 / 4, -18.0 / 4};
+
+    ts_bezier_init(points, 4, &s);
+    ts_bezier_dd(&s, x, &act, &act_d, &act_dd);
+
+    assert_vec3(exp, act);
+    assert_vec3(exp_d, act_d);
+    assert_vec3(exp_dd, act_dd);
+    ts_bezier_deinit(&s);
+}
 
 void test_poly5_init_constrained() {
     ts_vec3 start = {1, 2, 3};
@@ -110,9 +159,9 @@ void test_poly5(void) {
     ts_f64 x = 0.25;
     ts_vec3 act = {0};
     ts_vec3 exp = {
-        .x = 1 + 2.0/4 + 3.0/16 + 4.0/64 + 5.0/256 + 6.0/1024,
-        .y = 2 + 3.0/4 + 4.0/16 + 5.0/64 + 6.0/256 + 7.0/1024,
-        .z = 3 + 4.0/4 + 5.0/16 + 6.0/64 + 7.0/256 + 8.0/1024,
+        .x = 1 + 2.0 / 4 + 3.0 / 16 + 4.0 / 64 + 5.0 / 256 + 6.0 / 1024,
+        .y = 2 + 3.0 / 4 + 4.0 / 16 + 5.0 / 64 + 6.0 / 256 + 7.0 / 1024,
+        .z = 3 + 4.0 / 4 + 5.0 / 16 + 6.0 / 64 + 7.0 / 256 + 8.0 / 1024,
     };
 
     ts_poly5(&s, x, &act);
@@ -125,9 +174,9 @@ void test_poly5_d(void) {
     ts_f64 x = 0.25;
     ts_vec3 act = {0};
     ts_vec3 exp = {
-        .x = 2.0 + 2*3.0/4 + 3*4.0/16 + 4*5.0/64 + 5*6.0/256,
-        .y = 3.0 + 2*4.0/4 + 3*5.0/16 + 4*6.0/64 + 5*7.0/256,
-        .z = 4.0 + 2*5.0/4 + 3*6.0/16 + 4*7.0/64 + 5*8.0/256,
+        .x = 2.0 + 2 * 3.0 / 4 + 3 * 4.0 / 16 + 4 * 5.0 / 64 + 5 * 6.0 / 256,
+        .y = 3.0 + 2 * 4.0 / 4 + 3 * 5.0 / 16 + 4 * 6.0 / 64 + 5 * 7.0 / 256,
+        .z = 4.0 + 2 * 5.0 / 4 + 3 * 6.0 / 16 + 4 * 7.0 / 64 + 5 * 8.0 / 256,
     };
 
     ts_poly5_d(&s, x, &act);
@@ -140,9 +189,9 @@ void test_poly5_dd(void) {
     ts_f64 x = 0.25;
     ts_vec3 act = {0};
     ts_vec3 exp = {
-        .x = 2*3.0 + 2*3*4.0/4 + 3*4*5.0/16 + 4*5*6.0/64,
-        .y = 2*4.0 + 2*3*5.0/4 + 3*4*6.0/16 + 4*5*7.0/64,
-        .z = 2*5.0 + 2*3*6.0/4 + 3*4*7.0/16 + 4*5*8.0/64,
+        .x = 2 * 3.0 + 2 * 3 * 4.0 / 4 + 3 * 4 * 5.0 / 16 + 4 * 5 * 6.0 / 64,
+        .y = 2 * 4.0 + 2 * 3 * 5.0 / 4 + 3 * 4 * 6.0 / 16 + 4 * 5 * 7.0 / 64,
+        .z = 2 * 5.0 + 2 * 3 * 6.0 / 4 + 3 * 4 * 7.0 / 16 + 4 * 5 * 8.0 / 64,
     };
 
     ts_poly5_dd(&s, x, &act);
@@ -158,7 +207,11 @@ int main(void) {
     test_slerp();
     test_slerp_d();
     test_slerp_dd();
-    
+
+    test_bezier();
+    test_bezier_d();
+    test_bezier_dd();
+
     test_poly5_init_constrained();
     test_poly5();
     test_poly5_d();

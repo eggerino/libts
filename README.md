@@ -15,6 +15,5 @@ make
 
 ## TODOs
 
-- [ ] Tests for interpolation
 - [ ] Add documentation for more advanced features
 - [ ] Add infos to readme
