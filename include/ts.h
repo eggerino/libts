@@ -170,9 +170,6 @@ ts_vec3* ts_linear3(const ts_linear3_state* inst, ts_f64 x, ts_vec3* result);
 /* Compute the first derivative with respect to x. */
 ts_vec3* ts_linear3_d(const ts_linear3_state* inst, ts_vec3* result);
 
-/* Compute the second derivative with respect to x. */
-ts_vec3* ts_linear3_dd(ts_vec3* result);
-
 /*
  * Spherical linear interpolation of quaternions.
  */

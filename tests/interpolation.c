@@ -26,14 +26,6 @@ void test_linear3_d(void) {
     assert_vec3(exp, act);
 }
 
-void test_linear3_dd(void) {
-    ts_vec3 act = {0};
-    ts_vec3 exp = {0, 0, 0};
-
-    ts_linear3_dd(&act);
-    assert_vec3(exp, act);
-}
-
 void test_slerp(void) {
     ts_slerp_state s = {0};
     ts_quat start = {1, 2, 3, 4};
@@ -202,7 +194,6 @@ void test_poly5_dd(void) {
 int main(void) {
     test_linear3();
     test_linear3_d();
-    test_linear3_dd();
 
     test_slerp();
     test_slerp_d();

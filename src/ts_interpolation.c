@@ -30,13 +30,6 @@ ts_vec3* ts_linear3_d(const ts_linear3_state* inst, ts_vec3* result) {
     return result;
 }
 
-ts_vec3* ts_linear3_dd(ts_vec3* result) {
-    result->x = 0;
-    result->y = 0;
-    result->z = 0;
-    return result;
-}
-
 ts_slerp_state* ts_slerp_init(const ts_quat* start, const ts_quat* end, ts_slerp_state* inst) {
     quat_copy(*start, inst->start);
     quat_copy(*end, inst->end);
